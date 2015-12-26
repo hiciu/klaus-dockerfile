@@ -4,16 +4,16 @@ MAINTAINER Krzysztof Warzecha <kwarzecha7@gmail.com>
 
 # see https://www.google.pl/search?q=eatmydata+docker
 # This forces dpkg not to call sync() after package extraction and speeds up install
+# (we are also using eatmydata for that, I'm not sure if this is nessecary)
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
-# We don't need an apt cache in a container
-RUN echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
+# do not install recommended / suggested packages, always assume "yes", do not cache packages
+ADD apt-config /etc/apt/apt.conf.d/docker-config
 
-# Make sure the package repository is up to date
-RUN apt-get update && apt-get -qy install eatmydata
+RUN apt-get update && apt-get install eatmydata
 
-RUN eatmydata apt-get install -y -q \
-    python-pip python-dev python-virtualenv git exuberant-ctags
+RUN eatmydata apt-get install \
+    virtualenv python-dev git exuberant-ctags build-essential
 
 RUN useradd --create-home $USERADD_ARGS build
 USER build
@@ -24,4 +24,4 @@ RUN virtualenv /home/build
 RUN /home/build/bin/pip install wheel
 
 VOLUME /home/build/wheelhouse
-ENTRYPOINT /home/build/bin/pip wheel klaus markdown docutils uwsgi python-ctags
+CMD /home/build/bin/pip wheel klaus markdown docutils uwsgi python-ctags

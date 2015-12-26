@@ -1,0 +1,6 @@
+# see also /etc/apt/apt.conf.d/docker-clean
+
+APT::Install-Recommends "false";
+APT::Install-Suggests "false";
+
+APT::Get::Assume-Yes "true";
