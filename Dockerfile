@@ -5,16 +5,16 @@ MAINTAINER Krzysztof Warzecha <kwarzecha7@gmail.com>
 
 # see https://www.google.pl/search?q=eatmydata+docker
 # This forces dpkg not to call sync() after package extraction and speeds up install
+# (we are also using eatmydata for that, I'm not sure if this is nessecary)
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
-# We don't need an apt cache in a container
-RUN echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
+# do not install recommended / suggested packages, always assume "yes", do not cache packages
+ADD apt-config /etc/apt/apt.conf.d/docker-config
 
-# Make sure the package repository is up to date
-RUN apt-get update && apt-get -qy install eatmydata
+RUN apt-get update && apt-get install eatmydata
 
-RUN eatmydata apt-get install -y -q \
-    python-pip python-virtualenv git exuberant-ctags libpython2.7
+RUN eatmydata apt-get install \
+    virtualenv git exuberant-ctags python libpython2.7
 
 RUN virtualenv /opt/klaus/venv
 RUN /opt/klaus/venv/bin/pip install wheel
