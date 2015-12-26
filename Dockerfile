@@ -20,7 +20,7 @@ RUN virtualenv /opt/klaus/venv
 RUN /opt/klaus/venv/bin/pip install wheel
 
 # you can also use locally built wheels by mounting volume with them under /wheelhouse and overriding that variable
-ARG WHEELHOUSE_URL=https://hiciu.org/docker/klaus-dockerfile/wheelhouse/
+ENV WHEELHOUSE_URL=https://hiciu.org/docker/klaus-dockerfile/wheelhouse/
 ADD wheelhouse /wheelhouse
 
 # install
