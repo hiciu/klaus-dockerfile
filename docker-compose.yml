@@ -1,6 +1,6 @@
 ---
 klaus:
-  image: my_klaus_image
+  image: hiciu/klaus-dockerfile
   ports:
   - "8080:8080"
   volumes:
