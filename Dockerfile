@@ -1,34 +1,51 @@
-FROM ubuntu:14.04
-MAINTAINER Daniel Watkins <daniel@daniel-watkins.co.uk>
+FROM debian
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
-    python-pip python-dev python-virtualenv git exuberant-ctags
+# see https://github.com/oddbloke/klaus-dockerfile
+MAINTAINER Krzysztof Warzecha <kwarzecha7@gmail.com>
 
-# see https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables-build-arg
-# see https://github.com/docker/docker/issues/7198#issuecomment-159736577
-# during `docker build` you can specify different uid / git under which klaus will be running
-# override with `docker build --build-arg USERADD_ARGS="--uid 1000"`
-# use `docker build --build-arg USERADD_ARGS="--uid 0 --non-unique"` to run with root privileges
-ARG USERADD_ARGS="--uid 0 --non-unique"
+# see https://www.google.pl/search?q=eatmydata+docker
+# This forces dpkg not to call sync() after package extraction and speeds up install
+RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
-RUN useradd --system --home-dir /opt/klaus --create-home $USERADD_ARGS klaus
-USER klaus
+# We don't need an apt cache in a container
+RUN echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
+
+# Make sure the package repository is up to date
+RUN apt-get update && apt-get -qy install eatmydata
+
+RUN eatmydata apt-get install -y -q \
+    python-pip python-virtualenv git exuberant-ctags libpython2.7
 
 RUN virtualenv /opt/klaus/venv
-RUN /opt/klaus/venv/bin/pip install klaus markdown docutils uwsgi python-ctags
+RUN /opt/klaus/venv/bin/pip install wheel
+
+# you can also use locally built wheels by mounting volume with them under /wheelhouse and overriding that variable
+ARG WHEELHOUSE_URL=https://hiciu.org/docker/klaus-dockerfile/wheelhouse/
+ADD wheelhouse /wheelhouse
+
+# install
+RUN /opt/klaus/venv/bin/pip install --no-index --find-links=$WHEELHOUSE_URL \
+    klaus markdown docutils uwsgi python-ctags
 
 WORKDIR /opt/klaus
 ADD wsgi_autoreload_ctags.py wsgi_autoreload_ctags.py
+ADD wsgi_autoreload_ctags_active_directory_auth.py wsgi_autoreload_ctags_active_directory_auth.py
 
 EXPOSE 8080
 
 VOLUME /srv/git
 
 ENV KLAUS_REPOS_ROOT /srv/git/
-ENV KLAUS_SITE_NAME "oddbloke/klaus-dockerfile image"
+ENV KLAUS_SITE_NAME "klaus"
 
 # you can set this to "none" or "tags-and-branches"
 # ee tags-and-brancheshttps://github.com/jonashaag/klaus/wiki/Enable-ctags-support
-ENV KLAUS_CTAGS_POLICY "none"
+ENV KLAUS_CTAGS_POLICY "tags-and-branches"
 
-CMD /opt/klaus/venv/bin/uwsgi --wsgi-file wsgi_autoreload_ctags.py --http 0.0.0.0:8080 --processes 4 --threads 2
+# uwsgi will switch to that uid before running klaus
+ENV UWSGI_SETUID 1000
+
+ENV UWSGI_WSGI_FILE wsgi_autoreload_ctags.py
+
+# feel free to override these
+CMD /opt/klaus/venv/bin/uwsgi --uid $UWSGI_SETUID --wsgi-file $UWSGI_WSGI_FILE --http 0.0.0.0:8080 --processes 4 --threads 2

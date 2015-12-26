@@ -3,16 +3,34 @@ klaus-dockerfile
 
 A Dockerfile for klaus, a simple git web viewer
 
-running under different uid
----------------------------
+building
+========
 
-By default klaus will be running with root privileges (uid 0) to preserve compability with previous images.
+building wheels
+---------------
 
-This probably is not a very good idea. You can choose different uid during build with `--build-arg` flag.
+This step is optional. You can use pre-built wheels from https://hiciu.org/docker/klaus-dockerfile/wheelhouse/, you can also build your own.
 
-    docker build -t my_klaus_image --build-arg USERADD_ARGS="--uid 1000" .
+To build your own wheels:
+
+    docker build -f build-wheels.Dockerfile -t build-wheels .
+    docker run -v $(pwd)/wheelhouse:/home/build/wheelhouse build-wheels
+
+Wheels should appear in your `wheelhouse/` directory.
+
+building image
+--------------
+
+    docker build -t my_klaus_image .
+
+If you want to use your own wheels:
+
+    docker build -t my_klaus_image --build-arg WHEELHOUSE_URL=file:///wheelhouse .
 
 See Dockerfile for more informations.
+
+running
+=======
 
 using ctags
 -----------
