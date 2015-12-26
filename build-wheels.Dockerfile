@@ -24,4 +24,4 @@ RUN virtualenv /home/build
 RUN /home/build/bin/pip install wheel
 
 VOLUME /home/build/wheelhouse
-ENTRYPOINT /home/build/bin/pip wheel klaus markdown docutils uwsgi python-ctags
+CMD /home/build/bin/pip wheel klaus markdown docutils uwsgi python-ctags
