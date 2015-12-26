@@ -1,0 +1,13 @@
+---
+klaus:
+  image: my_klaus_image
+  ports:
+  - "8080:8080"
+  volumes:
+  - /srv/git:/srv/git
+  environment:
+    KLAUS_SITE_NAME: klaus
+    KLAUS_CTAGS_POLICY: tags-and-branches
+
+    UWSGI_WSGI_FILE: wsgi_autoreload_ctags_active_directory_auth.py
+    UWSGI_SETUID: 1000
