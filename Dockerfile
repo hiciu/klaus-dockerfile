@@ -29,7 +29,6 @@ RUN /opt/klaus/venv/bin/pip install --no-index --find-links=$WHEELHOUSE_URL \
 
 WORKDIR /opt/klaus
 ADD wsgi_autoreload_ctags.py wsgi_autoreload_ctags.py
-ADD wsgi_autoreload_ctags_active_directory_auth.py wsgi_autoreload_ctags_active_directory_auth.py
 
 EXPOSE 8080
 
