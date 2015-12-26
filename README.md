@@ -44,3 +44,10 @@ I'm not sure if this will play nicely with multiple processes and threads manage
     docker run -p ... --volume ... --env KLAUS_CTAGS_POLICY=tags-and-branches my_klaus_image /opt/klaus/venv/bin/uwsgi --wsgi-file ... --http ... --enable-threads
 
 You can find full command in Dockerfile. `--enable-threads` is needed to initialize Python's GIL (see http://uwsgi-docs.readthedocs.org/en/latest/ThingsToKnow.html), but by default even with `--enable-threads` there will be only one process and only one thread.
+
+using ldap
+----------
+
+This was tested with windows server 2012r2 active directory as ldap server. I'm not really sure if this can be useful to other people.
+
+Authentication is handled via `wsgi_autoreload_ctags_ldap.py` middleware (set `wsgi_autoreload_ctags_ldap.py` to `wsgi_autoreload_ctags_ldap.py`). You need to set `LDAP_SERVER` and `LDAP_SEARCH_BASE` variables. Feel free to modify that middleware, you can use modified one without rebuilding whole image; just mount it with `--volume` option.

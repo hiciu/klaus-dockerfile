@@ -25,10 +25,11 @@ ADD wheelhouse /wheelhouse
 
 # install
 RUN /opt/klaus/venv/bin/pip install --no-index --find-links=$WHEELHOUSE_URL \
-    klaus markdown docutils uwsgi python-ctags
+    klaus markdown docutils uwsgi python-ctags ldap3 expiringdict
 
 WORKDIR /opt/klaus
 ADD wsgi_autoreload_ctags.py wsgi_autoreload_ctags.py
+ADD wsgi_autoreload_ctags_ldap.py wsgi_autoreload_ctags_ldap.py
 
 EXPOSE 8080
 

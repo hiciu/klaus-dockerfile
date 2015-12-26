@@ -9,5 +9,8 @@ klaus:
     KLAUS_SITE_NAME: klaus
     KLAUS_CTAGS_POLICY: tags-and-branches
 
-    UWSGI_WSGI_FILE: wsgi_autoreload_ctags_active_directory_auth.py
+    UWSGI_WSGI_FILE: wsgi_autoreload_ctags_ldap.py
     UWSGI_SETUID: 1000
+
+    LDAP_SERVER: ldap.example.org
+    LDAP_SEARCH_BASE: ou=developers,dc=example,dc=org
