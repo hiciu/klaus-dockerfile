@@ -24,4 +24,4 @@ RUN virtualenv /home/build
 RUN /home/build/bin/pip install wheel
 
 VOLUME /home/build/wheelhouse
-CMD /home/build/bin/pip wheel klaus markdown docutils uwsgi python-ctags ldap3 expiringdict
+CMD /home/build/bin/pip wheel klaus markdown docutils uwsgi python-ctags ldap3 expiringdict chardet

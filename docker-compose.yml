@@ -1,10 +1,11 @@
 ---
 klaus:
-  image: my_klaus_image
+  image: hiciu/klaus-dockerfile
   ports:
   - "8080:8080"
   volumes:
   - /srv/git:/srv/git
+  - /etc/passwd:/etc/passwd:ro
   environment:
     KLAUS_SITE_NAME: klaus
     KLAUS_CTAGS_POLICY: tags-and-branches
